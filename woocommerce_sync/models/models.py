@@ -827,7 +827,13 @@ class WoocommerceConnector(models.Model):
             {
                 'product_sync_to_woocommerce': True,
                 'product_source': 'WooCommerce',
-                'product_language_code': woocommerce_product.get('lang', None),  # Polylang field
+                'product_language_code': (
+                    woocommerce_product.get('lang')
+                    or next(
+                        (meta['value'] for meta in woocommerce_product.get('meta_data', []) if meta.get('key') == 'wpml_language'),
+                        None,
+                    )
+                ),
                 'woocommerce_product_service': False,  # woocommerce_product.get('service', False), # Germanized field - https://vendidero.de/doc/woocommerce-germanized/products-rest-api
             },
         )
@@ -1460,6 +1466,17 @@ class WoocommerceConnector(models.Model):
                             'woocommerce_customer_date_last_login': datetime.fromtimestamp(int(meta['value']))
                             if (meta := next((meta for meta in customer['meta_data'] if meta.get('key') == 'wfls-last-login'), None))
                             else None,  # Wordfence Security field
+                            'woocommerce_customer_identification_type': customer['billing'].get('tipoIdentificacion')
+                            or next((meta['value'] for meta in customer['meta_data'] if meta.get('key') in ('tipo_identificacion', 'tipoIdentificacion')), None),
+                            'woocommerce_customer_identification_number': customer['billing'].get('billingId')
+                            or next((meta['value'] for meta in customer['meta_data'] if meta.get('key') in ('billing_id', '_billing_id')), None),
+                            'woocommerce_customer_language_code': (
+                                customer.get('lang')
+                                or next(
+                                    (meta['value'] for meta in customer['meta_data'] if meta.get('key') == 'wpml_language'),
+                                    None,
+                                )
+                            ),
                         },
                     )
 
@@ -1494,12 +1511,16 @@ class WoocommerceConnector(models.Model):
                             'user_id': woocommerce_sync_config.settings_woocommerce_user_responsible.id,
                             # Customer status
                             'active': True,
+                            'lang': customer_values['woocommerce_customer_language_code'],
                             # Address
                             'street': customer_values['woocommerce_customer_billing_address_1'],
                             'street2': customer_values['woocommerce_customer_billing_address_2'],
                             'city': customer_values['woocommerce_customer_billing_city'],
                             'zip': customer_values['woocommerce_customer_billing_postcode'],
                             'country_id': self.env['res.country'].search([('code', '=', customer_values['woocommerce_customer_billing_country'])], limit=1).id,
+                            'state_id': self.env['res.country.state']
+                            .search([('code', '=', customer_values['woocommerce_customer_billing_state']), ('country_id.code', '=', customer_values['woocommerce_customer_billing_country'])], limit=1)
+                            .id,
                         },
                     )
 
@@ -1643,7 +1664,13 @@ class WoocommerceConnector(models.Model):
                         )
                     order_values.update(
                         {
-                            'order_language_code': order.get('lang', None),  # Polylang field
+                            'order_language_code': (
+                                order.get('lang')
+                                or next(
+                                    (meta['value'] for meta in order.get('meta_data', []) if meta.get('key') == 'wpml_language'),
+                                    None,
+                                )
+                            ),
                         },
                     )
 
@@ -1695,6 +1722,17 @@ class WoocommerceConnector(models.Model):
                                     'woocommerce_customer_billing_country': order['billing']['country'],
                                     'woocommerce_customer_billing_email': order['billing']['email'],
                                     'woocommerce_customer_billing_phone': order['billing']['phone'],
+                                    'woocommerce_customer_identification_type': order['billing'].get('tipoIdentificacion')
+                                    or next((meta['value'] for meta in order['meta_data'] if meta.get('key') in ('tipo_identificacion', 'tipoIdentificacion')), None),
+                                    'woocommerce_customer_identification_number': order['billing'].get('billingId')
+                                    or next((meta['value'] for meta in order['meta_data'] if meta.get('key') in ('billing_id', '_billing_id')), None),
+                                    'woocommerce_customer_language_code': (
+                                        order.get('lang')
+                                        or next(
+                                            (meta['value'] for meta in order['meta_data'] if meta.get('key') == 'wpml_language'),
+                                            None,
+                                        )
+                                    ),
                                 },
                             )
 
@@ -1732,12 +1770,16 @@ class WoocommerceConnector(models.Model):
                                     'user_id': woocommerce_sync_config.settings_woocommerce_user_responsible.id,
                                     # Customer status
                                     'active': True,
+                                    'lang': customer_values['woocommerce_customer_language_code'],
                                     # Address
                                     'street': customer_values['woocommerce_customer_billing_address_1'],
                                     'street2': customer_values['woocommerce_customer_billing_address_2'],
                                     'city': customer_values['woocommerce_customer_billing_city'],
                                     'zip': customer_values['woocommerce_customer_billing_postcode'],
                                     'country_id': self.env['res.country'].search([('code', '=', customer_values['woocommerce_customer_billing_country'])], limit=1).id,
+                                    'state_id': self.env['res.country.state']
+                                    .search([('code', '=', customer_values['woocommerce_customer_billing_state']), ('country_id.code', '=', customer_values['woocommerce_customer_billing_country'])], limit=1)
+                                    .id,
                                 },
                             )
 

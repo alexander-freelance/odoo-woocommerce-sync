@@ -18,7 +18,7 @@ The **Odoo-WooCommerce Sync** add-on enables synchronization between WooCommerce
 - **Automated and Manual Synchronization:** A built-in cron job scheduler enables regular synchronization, complemented by a dedicated button for manually triggering updates.
 - **Advanced Settings:** Support for multiple WooCommerce websites with specific configuration options for each instance (e.g. syncing only products from WooCommerce to Odoo).
 - **Image Synchronization:** Optionally synchronize product images from WooCommerce to Odoo. For products imported from WooCommerce that include multiple images/product gallery, an additional product gallery is added to the `product.template` view.
-- **Language Filtering:** Synchronize products by language (*requires Polylang*).
+- **Language Filtering:** Synchronize products by language (*requires Polylang or WPML*).
 - **Orders Transactions Fee Support:** Integrates additional fee fields into orders processed with PayPal and Stripe (*requires the respective plugins*).
 
 Some features require additional setup, as detailed in the [Requirements](#requirements) section.
@@ -102,9 +102,10 @@ Brazil:
 #### WordPress Plugins (Optional)
 
 - **WooCommerce Customer Last Login:** (`woocommerce_customer_date_last_login` field): Requires the [Wordfence Security](https://wordpress.org/plugins/wordfence/) plugin.
-- **Product Language Code:** (`product_language_code` field): Requires [Polylang for WooCommerce](https://polylang.pro/downloads/polylang-for-woocommerce/) and either:
-  - [Polylang Pro](https://polylang.pro/downloads/polylang-pro/) (which enables the `lang` argument in the WooCommerce REST API); or
-  - The custom code snippet provided in [this file](./woocommerce-rest-api/woocommerce-rest-api-polylang-language-slug.php), saved either into the `functions.php` file or into a code snippet plugin (e.g. [WPCode](https://wordpress.org/plugins/insert-headers-and-footers/)).
+- **WooCommerce Multilingual & Multicurrency:** Provides WPML compatibility for WooCommerce REST API.
+- **Product Language Code:** (`product_language_code` field): Requires [Polylang for WooCommerce](https://polylang.pro/downloads/polylang-for-woocommerce/) or [WooCommerce Multilingual & Multicurrency](https://wpml.org/plugin/woocommerce-multilingual/) and either:
+  - [Polylang Pro](https://polylang.pro/downloads/polylang-pro/) (which enables the `lang` argument in the WooCommerce REST API) or WPML's REST API filters; or
+  - The custom code snippets provided in [these files](./woocommerce-rest-api/woocommerce-rest-api-polylang-language-slug.php) and [this WPML version](./woocommerce-rest-api/woocommerce-rest-api-wpml-language-slug.php), saved either into the `functions.php` file or into a code snippet plugin (e.g. [WPCode](https://wordpress.org/plugins/insert-headers-and-footers/)).
 - **Orders Transactions Fee** (`woocommerce_order_transaction_fee` field): Requires the [WooCommerce PayPal Payments](https://wordpress.org/plugins/woocommerce-paypal-payments/) and/or [Payment Plugins for Stripe WooCommerce](https://wordpress.org/plugins/woo-stripe-payment/) plugin.
   - For the [Payment Plugins for Stripe WooCommerce](https://wordpress.org/plugins/woo-stripe-payment/), the following setting needs to be changed in order to enable the Stripe transaction fee field: `WooCommerce` > `Stripe by Payment Plugins` > `Settings` > `Advanced Settings` > Enable `Display Stripe Fee`.
 

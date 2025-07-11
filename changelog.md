@@ -1,5 +1,13 @@
 # Changelog
 
+## 2025-07-09
+
+### Features
+
+- Added Colombian fields for document type and number when syncing customers.
+- Partner state is now mapped based on WooCommerce billing state code.
+- Added WPML language compatibility for product and order imports.
+
 ## 2025-06-24
 
 ### Features
