@@ -386,6 +386,11 @@ class ResPartner(models.Model):
     # Custom fields
     woocommerce_customer_date_last_login = fields.Datetime(string='Last Login Date', readonly=True)  # Wordfence fields
 
+    # Colombian localization fields
+    woocommerce_customer_identification_type = fields.Char(string='Document Type', readonly=True)
+    woocommerce_customer_identification_number = fields.Char(string='Document Number', readonly=True)
+    woocommerce_customer_language_code = fields.Char(string='Language', help='Polylang or WPML 2-digit ISO 639-1 language code.', readonly=True)
+
 
 # Orders
 class SaleOrder(models.Model):
